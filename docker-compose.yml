@@ -1,0 +1,30 @@
+version: '3.9'
+services:
+  database:
+    container_name: database
+    image: mysql:8.0
+    volumes:
+      - ./src/test/resources:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_HOST=%
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      - MYSQL_DATABASE=app
+      - MYSQL_USER=app
+      - MYSQL_PASSWORD=pass
+  app:
+    container_name: app-deadline
+    image: openjdk:8-slim
+    depends_on:
+      - database
+    volumes:
+      - ./artifacts:/usr/src/myapp
+    ports:
+      - "9999:9999"
+    working_dir: /usr/src/myapp
+    environment:
+      - DB_URL=jdbc:mysql://database:3306/app
+      - DB_USER=app
+      - DB_PASS=pass
+    command: java -jar app-deadline.jar
