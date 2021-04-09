@@ -19,16 +19,13 @@ public class VerificationPage {
         codeField.shouldBe(visible);
     }
 
-    public DashboardPage validVerify(DataHelper.VerificationCode verificationCode) {
+    public void verify(DataHelper.VerificationCode verificationCode) {
         codeField.setValue(deleteString).setValue(verificationCode.getCode());
         verifyButton.click();
-        return new DashboardPage();
     }
 
-    public VerificationPage invalidVerify(DataHelper.VerificationCode verificationCode) {
-        codeField.setValue(deleteString).setValue(verificationCode.getCode());
-        verifyButton.click();
-        return new VerificationPage();
+    public DashboardPage success() {
+        return new DashboardPage();
     }
 
     public void shouldHaveInvalidCodeMessage() {

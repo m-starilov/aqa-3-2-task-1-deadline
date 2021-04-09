@@ -1,4 +1,4 @@
-version: '3.9'
+version: '2.1'
 services:
   database:
     container_name: database
@@ -13,11 +13,16 @@ services:
       - MYSQL_DATABASE=app
       - MYSQL_USER=app
       - MYSQL_PASSWORD=pass
+    healthcheck:
+        test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+        timeout: 10s
+        retries: 5
   app:
     container_name: app-deadline
     image: openjdk:8-slim
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     volumes:
       - ./artifacts:/usr/src/myapp
     ports:
