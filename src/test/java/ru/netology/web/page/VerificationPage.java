@@ -19,18 +19,21 @@ public class VerificationPage {
         codeField.shouldBe(visible);
     }
 
-    public void verify(DataHelper.VerificationCode verificationCode) {
+    public DashboardPage verify(DataHelper.VerificationCode verificationCode) {
         codeField.setValue(deleteString).setValue(verificationCode.getCode());
         verifyButton.click();
+        return new DashboardPage();
     }
 
-    public DashboardPage success() {
-        return new DashboardPage();
+    public void verifyWithInvalidCode(DataHelper.VerificationCode verificationCode) {
+        codeField.setValue(deleteString).setValue(verificationCode.getCode());
+        verifyButton.click();
     }
 
     public void shouldHaveInvalidCodeMessage() {
         invalidCodeMessage.shouldBe(visible);
     }
+
     public void shouldHaveBlockMessage() {
         blockMessage.shouldBe(visible);
     }

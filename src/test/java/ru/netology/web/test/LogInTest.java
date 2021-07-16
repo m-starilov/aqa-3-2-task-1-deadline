@@ -1,6 +1,5 @@
 package ru.netology.web.test;
 
-import com.github.javafaker.Faker;
 import lombok.val;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,8 +14,7 @@ class LogInTest {
 
     @BeforeAll
     static void addNewUser() {
-        val faker = new Faker();
-        fakeUsername = faker.name().username();
+        fakeUsername = DataHelper.getFakerUsername();
         DataHelper.addNewUser(fakeUsername);
     }
 
@@ -24,29 +22,25 @@ class LogInTest {
     void shouldLogInExistUser() {
         val loginPage = open("http://localhost:9999", LoginPage.class);
         val authInfo = DataHelper.getAuthInfo("vasya");
-        loginPage.login(authInfo);
-        val verificationPage = loginPage.success();
+        val verificationPage = loginPage.login(authInfo);
         val verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         verificationPage.verify(verificationCode);
-        verificationPage.success();
     }
 
     @Test
     void shouldLogInNewUser() {
         val loginPage = open("http://localhost:9999", LoginPage.class);
         val authInfo = DataHelper.getAuthInfo(fakeUsername);
-        loginPage.login(authInfo);
-        val verificationPage = loginPage.success();
+        val verificationPage = loginPage.login(authInfo);
         val verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         verificationPage.verify(verificationCode);
-        verificationPage.success();
     }
 
     @Test
     void shouldNotLogInExistUser() {
         val loginPage = open("http://localhost:9999", LoginPage.class);
         val authInfo = DataHelper.getAuthInfo("petya");
-        loginPage.login(authInfo);
+        loginPage.loginWithInvalidData(authInfo);
         loginPage.shouldHaveErrorMassage();
     }
 
@@ -54,13 +48,13 @@ class LogInTest {
     void shouldBlockExistUser() {
         val loginPage = open("http://localhost:9999", LoginPage.class);
         val authInfo = DataHelper.getAuthInfo("petya");
-        loginPage.login(authInfo);
+        loginPage.loginWithInvalidData(authInfo);
         loginPage.shouldHaveErrorMassage();
-        loginPage.login(authInfo);
+        loginPage.loginWithInvalidData(authInfo);
         loginPage.shouldHaveErrorMassage();
-        loginPage.login(authInfo);
+        loginPage.loginWithInvalidData(authInfo);
         loginPage.shouldHaveErrorMassage();
-        loginPage.login(authInfo);
+        loginPage.loginWithInvalidData(authInfo);
         loginPage.shouldHaveBlockMassage();
     }
 
@@ -68,16 +62,15 @@ class LogInTest {
     void shouldBlockExistUserByVerificationCode() {
         val loginPage = open("http://localhost:9999", LoginPage.class);
         val authInfo = DataHelper.getAuthInfo("vasya");
-        loginPage.login(authInfo);
-        val verificationPage = loginPage.success();
+        val verificationPage = loginPage.login(authInfo);
         val verificationCode = DataHelper.getInvalidVerificationCode();
-        verificationPage.verify(verificationCode);
+        verificationPage.verifyWithInvalidCode(verificationCode);
         verificationPage.shouldHaveInvalidCodeMessage();
-        verificationPage.verify(verificationCode);
+        verificationPage.verifyWithInvalidCode(verificationCode);
         verificationPage.shouldHaveInvalidCodeMessage();
-        verificationPage.verify(verificationCode);
+        verificationPage.verifyWithInvalidCode(verificationCode);
         verificationPage.shouldHaveInvalidCodeMessage();
-        verificationPage.verify(verificationCode);
+        verificationPage.verifyWithInvalidCode(verificationCode);
         verificationPage.shouldHaveBlockMessage();
     }
 

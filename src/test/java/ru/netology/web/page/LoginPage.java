@@ -16,14 +16,17 @@ public class LoginPage {
     private final SelenideElement blockMassage = $(byText("Учётная запись временно заблокирована"));
     private final String deleteString = Keys.chord(Keys.CONTROL, "a") + Keys.DELETE;
 
-    public void login(DataHelper.AuthInfo info) {
+    public VerificationPage login(DataHelper.AuthInfo info) {
         loginField.setValue(deleteString).setValue(info.getLogin());
         passwordField.setValue(deleteString).setValue(info.getPassword());
         loginButton.click();
+        return new VerificationPage();
     }
 
-    public VerificationPage success() {
-        return new VerificationPage();
+    public void loginWithInvalidData(DataHelper.AuthInfo info) {
+        loginField.setValue(deleteString).setValue(info.getLogin());
+        passwordField.setValue(deleteString).setValue(info.getPassword());
+        loginButton.click();
     }
 
     public void shouldHaveErrorMassage() {
