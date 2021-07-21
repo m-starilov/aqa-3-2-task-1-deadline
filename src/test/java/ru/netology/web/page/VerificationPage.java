@@ -2,7 +2,6 @@ package ru.netology.web.page;
 
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.Keys;
-import ru.netology.web.data.DataHelper;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
@@ -19,14 +18,14 @@ public class VerificationPage {
         codeField.shouldBe(visible);
     }
 
-    public DashboardPage verify(DataHelper.VerificationCode verificationCode) {
-        codeField.setValue(deleteString).setValue(verificationCode.getCode());
+    public DashboardPage verify(String verificationCode) {
+        codeField.setValue(deleteString).setValue(verificationCode);
         verifyButton.click();
         return new DashboardPage();
     }
 
-    public void verifyWithInvalidCode(DataHelper.VerificationCode verificationCode) {
-        codeField.setValue(deleteString).setValue(verificationCode.getCode());
+    public void verifyWithInvalidCode(String verificationCode) {
+        codeField.setValue(deleteString).setValue(verificationCode);
         verifyButton.click();
     }
 
