@@ -88,17 +88,14 @@ public class DataHelper {
         return faker.finance().creditCard(CreditCardType.MASTERCARD).replaceAll("-", " ");
     }
 
-    public static double getCardBalance(String token, String last4digit) {
+    public static double getCardBalance(String token, String cardNumber) {
         val cardsInfo = APIHelper.getCardsInfo(token);
+        val last4digit = StringUtils.right(cardNumber, 4);
         for (DataHelper.CardsInfo array : cardsInfo) {
             if (array.getNumber().contains(last4digit)) {
                 balance = array.getBalance();
             }
         }
         return balance;
-    }
-
-    public static String getLast4Digit(String inputString) {
-        return StringUtils.right(inputString, 4);
     }
 }

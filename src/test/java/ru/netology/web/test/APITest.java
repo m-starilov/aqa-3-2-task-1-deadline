@@ -14,11 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.netology.web.data.DataHelper.TransferInfo;
 
 public class APITest {
-    static String userId;
     static String token;
     static List<DataHelper.CardsInfo> cardsInfo;
-    static String firstCardNumber;
-    static String secondCardNumber;
     static String firstCard;
     static String secondCard;
 
@@ -26,19 +23,16 @@ public class APITest {
     @BeforeAll
     static void setUp() {
         val authInfo = DataHelper.getValidUserAuthInfo();
-        userId = authInfo.getId();
         token = APIHelper.getToken(authInfo);
-        cardsInfo = SQLHelper.getCardsInfo(userId);
-        firstCardNumber = cardsInfo.get(0).getNumber();
-        secondCardNumber = cardsInfo.get(1).getNumber();
-        firstCard = DataHelper.getLast4Digit(firstCardNumber);
-        secondCard = DataHelper.getLast4Digit(secondCardNumber);
+        cardsInfo = SQLHelper.getCardsInfo(authInfo.getId());
+        firstCard = cardsInfo.get(0).getNumber();
+        secondCard = cardsInfo.get(1).getNumber();
     }
 
     @Test
     void shouldTransfer5ToAnotherCard() {
         val balanceBeforeTransaction = DataHelper.getCardBalance(token, firstCard);
-        val transferInfo = new TransferInfo(firstCardNumber, DataHelper.getFakerCardNumber(), 5);
+        val transferInfo = new TransferInfo(firstCard, DataHelper.getFakerCardNumber(), 5);
         APIHelper.transferResponse(token, transferInfo).then().statusCode(200);
         val balanceAfterTransaction = DataHelper.getCardBalance(token, firstCard);
         assertEquals(balanceBeforeTransaction, balanceAfterTransaction + 5);
@@ -47,7 +41,7 @@ public class APITest {
     @Test
     void shouldTransferSumWithKopecksToAnotherCard() {
         val balanceBeforeTransaction = DataHelper.getCardBalance(token, firstCard);
-        val transferInfo = new TransferInfo(firstCardNumber, DataHelper.getFakerCardNumber(), 50.5);
+        val transferInfo = new TransferInfo(firstCard, DataHelper.getFakerCardNumber(), 50.5);
         APIHelper.transferResponse(token, transferInfo).then().statusCode(200);
         val balanceAfterTransaction = DataHelper.getCardBalance(token, firstCard);
         assertEquals(balanceBeforeTransaction, balanceAfterTransaction + 50.5);
@@ -56,7 +50,7 @@ public class APITest {
     @Test
     void shouldTransferMaxToAnotherCard() {
         val balanceBeforeTransaction = DataHelper.getCardBalance(token, firstCard);
-        val transferInfo = new TransferInfo(firstCardNumber, DataHelper.getFakerCardNumber(),
+        val transferInfo = new TransferInfo(firstCard, DataHelper.getFakerCardNumber(),
                 balanceBeforeTransaction);
         APIHelper.transferResponse(token, transferInfo).then().statusCode(200);
         val balanceAfterTransaction = DataHelper.getCardBalance(token, firstCard);
@@ -65,20 +59,20 @@ public class APITest {
 
     @Test
     void shouldNotTransferMinus1000ToAnotherCard() {
-        val transferInfo = new TransferInfo(firstCardNumber, DataHelper.getFakerCardNumber(), -1000);
+        val transferInfo = new TransferInfo(firstCard, DataHelper.getFakerCardNumber(), -1000);
         APIHelper.transferResponse(token, transferInfo).then().statusCode(400);
     }
 
     @Test
     void shouldNotTransfer0ToAnotherCard() {
-        val transferInfo = new TransferInfo(firstCardNumber, DataHelper.getFakerCardNumber(), 1);
+        val transferInfo = new TransferInfo(firstCard, DataHelper.getFakerCardNumber(), 1);
         APIHelper.transferResponse(token, transferInfo).then().statusCode(400);
     }
 
     @Test
     void shouldNotTransferOverMaxToAnotherCard() {
         val balanceBeforeTransaction = DataHelper.getCardBalance(token, firstCard);
-        val transferInfo = new TransferInfo(firstCardNumber, DataHelper.getFakerCardNumber(),
+        val transferInfo = new TransferInfo(firstCard, DataHelper.getFakerCardNumber(),
                 balanceBeforeTransaction + 1);
         APIHelper.transferResponse(token, transferInfo).then().statusCode(400);
     }
@@ -87,7 +81,7 @@ public class APITest {
     void shouldTransfer5ToMyCard() {
         val balanceBeforeTransactionCardFrom = DataHelper.getCardBalance(token, firstCard);
         val balanceBeforeTransactionCardTo = DataHelper.getCardBalance(token, secondCard);
-        val transferInfo = new TransferInfo(firstCardNumber, secondCardNumber, 5);
+        val transferInfo = new TransferInfo(firstCard, secondCard, 5);
         APIHelper.transferResponse(token, transferInfo).then().statusCode(200);
         val balanceAfterTransactionCardFrom = DataHelper.getCardBalance(token, firstCard);
         val balanceAfterTransactionCardTo = DataHelper.getCardBalance(token, secondCard);
@@ -99,7 +93,7 @@ public class APITest {
     void shouldTransfer5ToMy2ndCard() {
         val balanceBeforeTransactionCardFrom = DataHelper.getCardBalance(token, firstCard);
         val balanceBeforeTransactionCardTo = DataHelper.getCardBalance(token, secondCard);
-        val transferInfo = new TransferInfo(firstCardNumber, secondCardNumber, 5);
+        val transferInfo = new TransferInfo(firstCard, secondCard, 5);
         APIHelper.transferResponse(token, transferInfo).then().statusCode(200);
         val balanceAfterTransactionCardFrom = DataHelper.getCardBalance(token, firstCard);
         val balanceAfterTransactionCardTo = DataHelper.getCardBalance(token, secondCard);
@@ -111,7 +105,7 @@ public class APITest {
     void shouldTransferMaxToMyCard() {
         val balanceBeforeTransactionCardFrom = DataHelper.getCardBalance(token, firstCard);
         val balanceBeforeTransactionCardTo = DataHelper.getCardBalance(token, secondCard);
-        val transferInfo = new TransferInfo(firstCardNumber, secondCardNumber,
+        val transferInfo = new TransferInfo(firstCard, secondCard,
                 balanceBeforeTransactionCardFrom);
         APIHelper.transferResponse(token, transferInfo).then().statusCode(200);
         val balanceAfterTransactionCardFrom = DataHelper.getCardBalance(token, firstCard);
@@ -126,7 +120,7 @@ public class APITest {
     void shouldTransferMaxToMy2ndCard() {
         val balanceBeforeTransactionCardFrom = DataHelper.getCardBalance(token, firstCard);
         val balanceBeforeTransactionCardTo = DataHelper.getCardBalance(token, secondCard);
-        val transferInfo = new TransferInfo(firstCardNumber, secondCardNumber,
+        val transferInfo = new TransferInfo(firstCard, secondCard,
                 balanceBeforeTransactionCardFrom);
         APIHelper.transferResponse(token, transferInfo).then().statusCode(200);
         val balanceAfterTransactionCardFrom = DataHelper.getCardBalance(token, firstCard);
@@ -139,33 +133,33 @@ public class APITest {
 
     @Test
     void shouldNotTransferMinus1000ToMyCard() {
-        val transferInfo = new TransferInfo(firstCardNumber, secondCardNumber, -1000);
+        val transferInfo = new TransferInfo(firstCard, secondCard, -1000);
         APIHelper.transferResponse(token, transferInfo).then().statusCode(400);
     }
 
     @Test
     void shouldNotTransfer0ToMyCard() {
-        val transferInfo = new TransferInfo(firstCardNumber, secondCardNumber, 0);
+        val transferInfo = new TransferInfo(firstCard, secondCard, 0);
         APIHelper.transferResponse(token, transferInfo).then().statusCode(400);
     }
 
     @Test
     void shouldNotTransferOverMaxToMyCard() {
         val balanceBeforeTransaction = DataHelper.getCardBalance(token, firstCard);
-        val transferInfo = new TransferInfo(firstCardNumber, secondCardNumber,
+        val transferInfo = new TransferInfo(firstCard, secondCard,
                 balanceBeforeTransaction + 1);
         APIHelper.transferResponse(token, transferInfo).then().statusCode(400);
     }
 
     @Test
     void shouldNotTransferFromToOnceCard() {
-        val transferInfo = new TransferInfo(firstCardNumber, firstCardNumber, 5);
+        val transferInfo = new TransferInfo(firstCard, firstCard, 5);
         APIHelper.transferResponse(token, transferInfo).then().statusCode(400);
     }
 
     @AfterEach
     void restoreBalance() {
-        SQLHelper.restoreBalance();
+        SQLHelper.restoreBalance(new String[] {firstCard, secondCard});
     }
 
     @AfterAll

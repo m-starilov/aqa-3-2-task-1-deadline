@@ -80,17 +80,15 @@ public class SQLHelper {
     }
 
     @SneakyThrows
-    public static void restoreBalance() {
+    public static void restoreBalance(String[] cardsNumbers) {
         val runner = new QueryRunner();
-        val dataSQL = "UPDATE cards SET `balance_in_kopecks` = 1000000  " +
-                "WHERE `number` IN ('5559 0000 0000 0001', '5559 0000 0000 0002')";
-
+        val dataSQL = "UPDATE cards SET balance_in_kopecks = 1000000  WHERE number IN (?, ?)";
         try (
                 val conn = DriverManager.getConnection(
                         "jdbc:mysql://localhost:3306/app", "app", "pass"
                 )
         ) {
-            runner.update(conn, dataSQL);
+            runner.update(conn, dataSQL, (Object[]) cardsNumbers);
         }
     }
 
